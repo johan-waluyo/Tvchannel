@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IPTV Channel Player with Search and Copy URL</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+<h2>IPTV Channel Player</h2>
+<input type="text" id="searchBox" placeholder="Search channel name...">
+<br><br>
+<select id="channelSelect"></select>
+<br><br>
+<video id="video" controls width="640" height="360"></video>
+<br>
+Channel Stream URL:
+<input type="text" id="channelUrlBox" style="width:60%" readonly>
+<button onclick="copyUrl()">Copy</button>
+
+<script>
+const m3uUrl = 'https://iptv-org.github.io/iptv/index.m3u';
+
+let allChannels = []; // Store all channels here
+
+async function fetchAndParseM3U(url) {
+    const response = await fetch(url);
+    const text = await response.text();
+
+    const lines = text.split('\n');
+    const channels = [];
+    let currentName = '';
+    for (const line of lines) {
+        if (line.startsWith('#EXTINF')) {
+            let match = line.match(/tvg-name="([^"]+)"/);
+            if (match) {
+                currentName = match[1];
+            } else {
+                let commaIndex = line.indexOf(',');
+                currentName = (commaIndex !== -1) ? line.substr(commaIndex + 1).trim() : 'Unknown Channel';
+            }
+        }
+        else if (line && !line.startsWith('#')) {
+            channels.push({ name: currentName, url: line });
+            currentName = '';
+        }
+    }
+    return channels;
+}
+
+function loadChannels(channels, autoPlay = true) {
+    const select = document.getElementById('channelSelect');
+    select.innerHTML = '';
+    channels.forEach((ch, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = ch.name;
+        select.appendChild(option);
+    });
+
+    select.onchange = () => playChannel(channels[select.value].url);
+    // Auto-play the first result only if desired and at least one match
+    if (channels.length > 0 && autoPlay) {
+        select.selectedIndex = 0;
+        playChannel(channels[0].url);
+    } else {
+        document.getElementById('channelUrlBox').value = '';
+    }
+}
+
+function playChannel(streamUrl) {
+    const video = document.getElementById('video');
+    document.getElementById('channelUrlBox').value = streamUrl; // Show URL for copying
+    if (Hls.isSupported()) {
+        if (window.hls) window.hls.destroy();
+        window.hls = new Hls();
+        window.hls.loadSource(streamUrl);
+        window.hls.attachMedia(video);
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = streamUrl;
+    }
+}
+
+// Wild search/filter function for the channel list
+document.getElementById('searchBox').addEventListener('input', function () {
+    const keyword = this.value.toLowerCase();
+    const filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(keyword));
+    loadChannels(filtered, false); // Don't auto-play on search
+});
+
+function copyUrl() {
+    const urlBox = document.getElementById('channelUrlBox');
+    urlBox.select();
+    urlBox.setSelectionRange(0, 99999); // For mobile
+    document.execCommand('copy');
+}
+
+// Initial fetch and display
+fetchAndParseM3U(m3uUrl).then(channels => {
+    allChannels = channels;
+    loadChannels(allChannels);
+});
+</script>
+</body>
+</html>

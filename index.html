@@ -54,7 +54,6 @@
     nav a:hover {
       color: var(--netflix-highlight);
     }
-    /* FEATURED VIDEO */
     .featured {
       width: 100%;
       max-width: 1280px;
@@ -145,7 +144,6 @@
       margin-bottom: 10px;
       box-shadow: 0 2px 18px #0008;
     }
-    /* Channel CARDS LIST */
     .channel-section {
       width: 100%;
       max-width: 1280px;
@@ -224,8 +222,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    /* Footer/donation */
+    /* --- Footer/donate --- */
     footer {
       background: #111;
       color: var(--netflix-text);
@@ -263,12 +260,23 @@
     .donate-footer a:hover {
       background: #f39c12;
     }
-    .donate-footer iframe {
-      border-radius: 8px;
+    .qr-wrapper {
+      background: #fff;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px 12px;
       margin-bottom: 7px;
-      width: 100%;
-      min-height: 145px;
-      border:none;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .qr-wrapper img {
+      width: 200px;
+      max-width: 85vw;
+      display: block;
+      border-radius: 6px;
     }
     .donate-footer hr {
       border: none;
@@ -276,6 +284,8 @@
       margin: 16px 0 8px;
     }
     @media (max-width: 700px) {
+      .qr-wrapper img { width: 120px; }
+      .qr-wrapper { padding: 8px 4px; }
       .featured {padding: 8px 2vw;}
       #video {height:140px;}
       .channel-section {padding:5px 2vw;}
@@ -291,11 +301,6 @@
 <header>
   <span class="netflix-logo">TV</span>
   Asia TV
-  <!--nav>
-    <a href="#">Home</a>
-    <a href="#">About</a>
-    <a href="#">List</a>
-  </nav-->
 </header>
 
 <div class="featured">
@@ -322,7 +327,6 @@
   </div>
 </div>
 
-<!-- Channel Cards -->
 <div class="channel-section">
   <div class="channel-row-title" id="channelsTitle">Channels</div>
   <div class="channel-list" id="channelCards">
@@ -333,7 +337,9 @@
 <footer>
   <div class="donate-footer">
     <h3>Dukung Channel!</h3>
-    <iframe src="https://saweria.co/widget/donate/johanwaluyo"></iframe>
+    <div class="qr-wrapper">
+      <img src="sawer.png" alt="QR Donasi Saweria">
+    </div>
     <p>Scan QR atau klik tombol di bawah ini:</p>
     <a href="https://saweria.co/johanwaluyo" target="_blank">Donasi ke Saweria</a>
     <hr>
@@ -346,7 +352,6 @@
 </footer>
 
 <script>
-//---------------- CHANNEL DATA & LOGIC ----------------//
 const regionM3uUrls = {
   all: 'https://iptv-org.github.io/iptv/index.m3u',
   sg:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/sg.m3u',
@@ -360,7 +365,6 @@ const regionM3uUrls = {
 
 let allChannels = []; // current region's channels
 
-// Fetch/parse m3u
 async function fetchAndParseM3U(url) {
     const response = await fetch(url);
     const text = await response.text();
@@ -385,7 +389,6 @@ async function fetchAndParseM3U(url) {
     return channels.filter(ch => ch.name && ch.url);
 }
 
-// Renders channel cards in horizontal row
 function renderChannelCards(channels) {
     const container = document.getElementById('channelCards');
     container.innerHTML = '';
@@ -404,7 +407,6 @@ function renderChannelCards(channels) {
     });
 }
 
-// Play channel (from card click)
 window.playChannelFromCard = function(url, name){
     url = decodeURIComponent(url);
     document.getElementById('channelUrlBox').value = url;
@@ -418,11 +420,10 @@ window.playChannelFromCard = function(url, name){
     }
 };
 
-// Also update featured select box:
 function loadChannelsDropdown(channels) {
     let select = document.createElement('select');
     select.id = 'channelSelect';
-    select.style.display='none'; // hidden: UI handled by cards
+    select.style.display='none';
     channels.forEach((ch, idx) => {
         let opt = document.createElement('option');
         opt.value = idx;
@@ -436,7 +437,6 @@ function loadChannelsDropdown(channels) {
     document.body.appendChild(select);
 }
 
-// Highlight and autoplay first channel
 function highlightFirstChannel() {
     let firstCard = document.querySelector('.channel-card');
     if (firstCard) firstCard.style.borderColor = "#e50914";
@@ -444,7 +444,6 @@ function highlightFirstChannel() {
     document.getElementById('channelUrlBox').value = allChannels[0]?.url || '';
 }
 
-// SEARCH/FILTER
 document.getElementById('searchBox').addEventListener('input', function () {
     let keyword = this.value.toLowerCase();
     let filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(keyword));
@@ -459,7 +458,6 @@ document.getElementById('searchBox').addEventListener('input', function () {
     }
 });
 
-// REGION CHANGE
 document.getElementById('regionSelect').addEventListener('change', function() {
     let region = this.value;
     let url = regionM3uUrls[region] || regionM3uUrls.id;
@@ -473,7 +471,6 @@ document.getElementById('regionSelect').addEventListener('change', function() {
     });
 });
 
-// On load: ID region
 window.addEventListener('DOMContentLoaded', function(){
     document.getElementById('regionSelect').value='id';
     let url = regionM3uUrls.id;
@@ -486,7 +483,6 @@ window.addEventListener('DOMContentLoaded', function(){
     });
 });
 
-// COPY URL
 function copyUrl() {
     const urlBox = document.getElementById('channelUrlBox');
     urlBox.select();
@@ -496,4 +492,3 @@ function copyUrl() {
 </script>
 </body>
 </html>
-

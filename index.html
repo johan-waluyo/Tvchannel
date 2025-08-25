@@ -2,130 +2,307 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TV Channel - Asia</title>
+  <title>Asia TV</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f3f6fa; }
-    header, footer {
-      background: #0a1b5c;
-      color: #fff;
-      padding: 16px 0;
-      text-align: center;
+    :root {
+      --netflix-bg: #141414;
+      --netflix-card: #222;
+      --netflix-highlight: #e50914;
+      --netflix-text: #fff;
+      --netflix-muted: #aaa;
+      --netflix-border: #313131;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      background: var(--netflix-bg);
+      color: var(--netflix-text);
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(to right, #111 80%, transparent);
+      height: 70px;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      color: var(--netflix-text);
+      font-size: 1.3em;
+      letter-spacing: 1.5px;
+      font-weight: bold;
+      border-bottom: 1px solid #222;
+    }
+    .netflix-logo {
+      font-size: 1.8em;
+      color: var(--netflix-highlight);
+      font-family: 'Arial Black', Arial, sans-serif;
+      letter-spacing: -2px;
+      margin-right: 24px;
+      text-shadow: 0 0 18px #e50914aa;
+    }
+    nav {
+      margin-left: 30px;
     }
     nav a {
-      color: #ffd700;
+      color: var(--netflix-text);
       text-decoration: none;
-      margin: 0 12px;
+      margin-right: 20px;
       font-weight: bold;
-      transition: color 0.2s;
+      font-size: 1.03em;
     }
     nav a:hover {
-      color: #ffa500;
-      text-decoration: underline;
+      color: var(--netflix-highlight);
     }
-    .container {
-      display: flex;
-      max-width: 1100px;
-      margin: 32px auto 24px auto;
-      padding: 0 16px;
-      gap: 24px;
-    }
-    .main-content {
-      flex: 2;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px #0001;
-      padding: 24px 20px;
-    }
-    .sidebar {
-      flex: 1;
-      background: #f8fbff;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px #0001;
-      padding: 24px 20px;
-      min-width: 270px;
-      max-width: 360px;
-    }
-    h1 {
-      margin: 0 0 4px 0;
-      font-size: 2em;
-      letter-spacing: 1px;
-    }
-    h2 {
-      font-size: 1.45em;
-      margin-top: 0;
-    }
-    label, select, input, button {
-      font-size: 1em;
-      margin-bottom: 6px;
-    }
-    select, input[type="text"] {
-      padding: 5px 7px;
-    }
-    #channelSelect {
-      width: 90%;
-      margin-bottom: 12px;
-    }
-    #video {
+    /* FEATURED VIDEO */
+    .featured {
       width: 100%;
-      max-width: 700px;
-      height: 360px;
-      background: #111;
-      margin-bottom: 10px;
+      max-width: 1280px;
+      margin: 30px auto 0 auto;
+      border-radius: 18px;
+      background: linear-gradient(140deg, #222 80%, #111 100%);
+      padding: 32px 36px 42px 36px;
+      box-shadow: 0 3px 32px #0007;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      position: relative;
+    }
+    @media(max-width:900px) {
+      .featured { padding: 10px 7px 22px 7px;}
+      .featured-title { font-size: 1.2em;}
+    }
+    .featured-title {
+      font-size: 2.2em;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: var(--netflix-text);
+      text-shadow: 0 2px 25px #0009;
+      margin-bottom: 8px;
+      margin-top: 2px;
+    }
+    .featured-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+    .featured-controls select,
+    .featured-controls input[type="text"] {
+      background: #222;
+      color: var(--netflix-text);
+      border: 1px solid var(--netflix-border);
       border-radius: 4px;
-      display: block;
+      padding: 7px 11px;
+      font-size: 1.06em;
+      margin-right: 5px;
+    }
+    .featured-controls input[type="text"] {
+      width: 220px;
+    }
+    .featured-controls select:focus,
+    .featured-controls input[type="text"]:focus {
+      border-color: var(--netflix-highlight);
+      outline: none;
     }
     .channelUrlBoxWrapper {
-      margin-top: 7px;
+      margin-top: 8px;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     #channelUrlBox {
-      width: 67%;
-      font-size: 0.98em;
-      margin-right: 6px;
-      padding: 4px 5px;
+      background: #181818;
+      color: var(--netflix-text);
+      border: 1px solid var(--netflix-border);
       border-radius: 4px;
-      border: 1px solid #bbb;
-      background: #f8f8f8;
+      padding: 4px 10px;
+      font-size: 0.98em;
+      width: 230px;
     }
     button {
-      background: #0a1b5c;
+      background: var(--netflix-highlight);
       color: #fff;
-      padding: 6px 16px;
+      padding: 7px 18px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 1em;
+      font-weight: 500;
+      transition: background .2s;
     }
-    button:hover { background: #2444a7; }
-    @media (max-width: 1000px) {
-      .container { flex-direction: column; }
-      .sidebar { max-width: 100%; min-width: 0; margin-top: 24px; }
-      #video { height: 220px; }
+    button:hover { background: #b00610;}
+    #video {
+      width: 100%;
+      max-width: 780px;
+      height: 430px;
+      background: #000;
+      border-radius: 11px;
+      display: block;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 18px #0008;
     }
-    @media (max-width: 500px) {
-      .main-content, .sidebar { padding: 16px 6px; }
-      #video { height: 140px; }
+    /* Channel CARDS LIST */
+    .channel-section {
+      width: 100%;
+      max-width: 1280px;
+      margin: 30px auto 0 auto;
+      padding: 4px 24px 20px 24px;
     }
+    .channel-row-title {
+      font-size: 1.45em;
+      margin: 24px 0 6px 5px;
+      font-weight: bold;
+      color: var(--netflix-text);
+      letter-spacing: .5px;
+    }
+    .channel-list {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .channel-card {
+      background: var(--netflix-card);
+      border-radius: 8px;
+      box-shadow: 0 0.5px 6px #0005;
+      padding: 12px 11px 13px 11px;
+      min-width: 180px;
+      max-width: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      position: relative;
+      transition: transform 0.18s;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .channel-card:hover {
+      border-color: var(--netflix-highlight);
+      transform: scale(1.03);
+      z-index: 2;
+      box-shadow: 0 2px 16px #e5091422;
+    }
+    .channel-card .channel-name {
+      font-size: 1.15em;
+      font-weight: bold;
+      color: var(--netflix-text);
+      margin-bottom: 7px;
+      margin-top: 3px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 95%;
+    }
+    .channel-card .play-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--netflix-highlight);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 12px 4px 12px;
+      font-size: 1em;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 4px;
+      box-shadow: 0 1px 8px #b0061077;
+      transition: background .2s;
+    }
+    .channel-card .play-btn:hover { background: #b00610;}
+    .channel-card .channel-url {
+      font-size: 0.89em;
+      color: var(--netflix-muted);
+      margin-top: 9px;
+      max-width: 95%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Footer/donation */
+    footer {
+      background: #111;
+      color: var(--netflix-text);
+      padding: 23px 12px 9px 12px;
+      text-align: center;
+      font-size: 1.05em;
+      margin-top: 24px;
+    }
+    .donate-footer {
+      background: #181818;
+      border-radius: 8px;
+      color: var(--netflix-text);
+      padding: 18px 14px 4px 14px;
+      margin: 0 auto 18px auto;
+      max-width: 500px;
+      box-shadow: 0 2px 16px #0007;
+    }
+    .donate-footer h3 {
+      color: var(--netflix-highlight);
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    .donate-footer a {
+      background: orange;
+      color: white;
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 1.08em;
+      font-weight: 500;
+      margin-top: 6px;
+      margin-bottom: 7px;
+    }
+    .donate-footer a:hover {
+      background: #f39c12;
+    }
+    .donate-footer iframe {
+      border-radius: 8px;
+      margin-bottom: 7px;
+      width: 100%;
+      min-height: 145px;
+      border:none;
+    }
+    .donate-footer hr {
+      border: none;
+      border-top: 1px solid #444;
+      margin: 16px 0 8px;
+    }
+    @media (max-width: 700px) {
+      .featured {padding: 8px 2vw;}
+      #video {height:140px;}
+      .channel-section {padding:5px 2vw;}
+      .channel-list {gap:10px;}
+      .channel-card{min-width:130px;}
+    }
+    ::-webkit-scrollbar { height: 7px; background: #191919;}
+    ::-webkit-scrollbar-thumb { background: #2b2b2b;}
   </style>
 </head>
 <body>
 
-<!-- Header & Navigation -->
 <header>
-  <h1>TV Channel</h1>
-  <!--<nav>
-    <a href="index.html">Home</a>
-    <a href="jadwal.html">Jadwal</a>
-    <a href="id.html">IPTV</a>
-  </nav>-->
+  <span class="netflix-logo">TV</span>
+  Asia TV
+  <!--nav>
+    <a href="#">Home</a>
+    <a href="#">About</a>
+    <a href="#">List</a>
+  </nav-->
 </header>
 
-<!-- Main Container (Content & Sidebar) -->
-<div class="container">
-  <div class="main-content">
-    <h2>TV Channel</h2>
-
-    <label for="regionSelect"><b>Region:</b></label>
+<div class="featured">
+  <div class="featured-title">Live TV Streaming</div>
+  <video id="video" controls></video>
+  <div class="featured-controls">
+    <label for="regionSelect" style="font-weight:bold;">Region:</label>
     <select id="regionSelect">
       <option value="all">ALL</option>
       <option value="sg">Singapore</option>
@@ -136,47 +313,40 @@
       <option value="vn">Vietnam</option>
       <option value="kh">Cambodia</option>
     </select>
-    <br><br>
-
-    <input type="text" id="searchBox" placeholder="Search channel name..." style="width:80%">
-    <br><br>
-
-    <select id="channelSelect"></select>
-    <br><br>
-
-    <video id="video" controls></video>
-    <br>
-    <div class="channelUrlBoxWrapper">
-      Channel Stream URL: <br>
-      <input type="text" id="channelUrlBox" readonly>
-      <button onclick="copyUrl()">Copy</button>
-    </div>
+    <input type="text" id="searchBox" placeholder="Search channel name...">
   </div>
-
-  <!-- Sidebar Donasi Saweria -->
-  <div class="sidebar">
-    <h3>Dukung Channel!</h3>
-    <iframe src="https://saweria.co/widget/donate/NAMA_SAWERIA"
-            style="border:none;width:100%;height:250px;border-radius:8px;margin-bottom:10px;"></iframe>
-    <p>Scan QR atau klik tombol di bawah ini:</p>
-    <a href="https://saweria.co/NAMA_SAWERIA" target="_blank"
-       style="display:inline-block;background:orange;color:white;padding:12px 28px;font-size:1.1em;border-radius:6px;text-decoration:none;">Donasi ke Saweria</a>
-    <hr style="margin:22px 0 10px;">
-    <p style="font-size:0.98em;color:#555;">
-      <b>Tips:</b> Jika streaming tidak berjalan, coba pilih channel lain atau region berbeda.<br>
-      <b>Butuh channel favorit?</b> Request via DM IG kami!
-    </p>
+  <div class="channelUrlBoxWrapper">
+    <label style="color:#aaa;">Channel Stream URL:</label>
+    <input type="text" id="channelUrlBox" readonly>
+    <button onclick="copyUrl()">Copy</button>
   </div>
 </div>
 
-<!-- Footer -->
+<!-- Channel Cards -->
+<div class="channel-section">
+  <div class="channel-row-title" id="channelsTitle">Channels</div>
+  <div class="channel-list" id="channelCards">
+    <!-- JS fills in channel cards here -->
+  </div>
+</div>
+
 <footer>
-  &copy; 2024 My TV Channel &mdash; Follow us:
-  <a style="color:#ffd700;" href="https://instagram.com/johanwaluyo" target="_blank">Instagram</a>
+  <div class="donate-footer">
+    <h3>Dukung Channel!</h3>
+    <iframe src="https://saweria.co/widget/donate/NAMA_SAWERIA"></iframe>
+    <p>Scan QR atau klik tombol di bawah ini:</p>
+    <a href="https://saweria.co/NAMA_SAWERIA" target="_blank">Donasi ke Saweria</a>
+    <hr>
+    <div style="font-size:0.96em;color:#aaa;">
+      <b>Tips:</b> Jika streaming tidak berjalan, coba pilih channel lain atau region berbeda.<br>
+      <b>Butuh channel favorit?</b> Request via DM IG kami!
+    </div>
+  </div>
+  &copy; 2024 Asia TV &mdash; <a href="https://instagram.com/johanwaluyo" target="_blank" style="color:#e50914;">Instagram</a>
 </footer>
 
-<!-- IPTV Channel JS -->
 <script>
+//---------------- CHANNEL DATA & LOGIC ----------------//
 const regionM3uUrls = {
   all: 'https://iptv-org.github.io/iptv/index.m3u',
   sg:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/sg.m3u',
@@ -188,13 +358,12 @@ const regionM3uUrls = {
   kh:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kh.m3u'
 };
 
-let allChannels = []; // master channel list
+let allChannels = []; // current region's channels
 
-// Fetch/parse .m3u file
+// Fetch/parse m3u
 async function fetchAndParseM3U(url) {
     const response = await fetch(url);
     const text = await response.text();
-
     const lines = text.split('\n');
     const channels = [];
     let currentName = '';
@@ -213,79 +382,117 @@ async function fetchAndParseM3U(url) {
             currentName = '';
         }
     }
-    return channels;
+    return channels.filter(ch => ch.name && ch.url);
 }
 
-function loadChannels(channels, autoPlay = true) {
-    const select = document.getElementById('channelSelect');
-    select.innerHTML = '';
+// Renders channel cards in horizontal row
+function renderChannelCards(channels) {
+    const container = document.getElementById('channelCards');
+    container.innerHTML = '';
     channels.forEach((ch, idx) => {
-        const option = document.createElement('option');
-        option.value = idx;
-        option.textContent = ch.name;
-        select.appendChild(option);
+        const card = document.createElement('div');
+        card.className = 'channel-card';
+        card.title = ch.name;
+        card.innerHTML = `
+          <div class="channel-name">${ch.name}</div>
+          <button class="play-btn" onclick="playChannelFromCard('${encodeURIComponent(ch.url)}', '${encodeURIComponent(ch.name)}')">
+            &#9654; Play
+          </button>
+          <div class="channel-url">${ch.url}</div>
+        `;
+        container.appendChild(card);
     });
-
-    select.onchange = () => playChannel(channels[select.value].url);
-    if (channels.length > 0 && autoPlay) {
-        select.selectedIndex = 0;
-        playChannel(channels[0].url);
-    } else {
-        document.getElementById('channelUrlBox').value = '';
-        const video = document.getElementById('video');
-        if (window.hls) window.hls.destroy();
-        video.src = '';
-    }
 }
 
-function playChannel(streamUrl) {
-    const video = document.getElementById('video');
-    document.getElementById('channelUrlBox').value = streamUrl;
+// Play channel (from card click)
+window.playChannelFromCard = function(url, name){
+    url = decodeURIComponent(url);
+    document.getElementById('channelUrlBox').value = url;
     if (Hls.isSupported()) {
         if (window.hls) window.hls.destroy();
         window.hls = new Hls();
-        window.hls.loadSource(streamUrl);
-        window.hls.attachMedia(video);
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = streamUrl;
+        window.hls.loadSource(url);
+        window.hls.attachMedia(document.getElementById('video'));
+    } else {
+        document.getElementById('video').src = url;
     }
+};
+
+// Also update featured select box:
+function loadChannelsDropdown(channels) {
+    let select = document.createElement('select');
+    select.id = 'channelSelect';
+    select.style.display='none'; // hidden: UI handled by cards
+    channels.forEach((ch, idx) => {
+        let opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = ch.name;
+        select.appendChild(opt);
+    });
+    select.onchange = () => {
+        let ch = channels[select.value];
+        playChannelFromCard(encodeURIComponent(ch.url), encodeURIComponent(ch.name));
+    }
+    document.body.appendChild(select);
 }
 
-// Search/filter for current channel list
+// Highlight and autoplay first channel
+function highlightFirstChannel() {
+    let firstCard = document.querySelector('.channel-card');
+    if (firstCard) firstCard.style.borderColor = "#e50914";
+    if (allChannels.length > 0) playChannelFromCard(encodeURIComponent(allChannels[0].url), encodeURIComponent(allChannels[0].name));
+    document.getElementById('channelUrlBox').value = allChannels[0]?.url || '';
+}
+
+// SEARCH/FILTER
 document.getElementById('searchBox').addEventListener('input', function () {
-    const keyword = this.value.toLowerCase();
-    const filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(keyword));
-    loadChannels(filtered, false);
+    let keyword = this.value.toLowerCase();
+    let filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(keyword));
+    renderChannelCards(filtered);
+    loadChannelsDropdown(filtered);
+    if (filtered.length > 0) {
+      playChannelFromCard(encodeURIComponent(filtered[0].url), encodeURIComponent(filtered[0].name));
+      document.getElementById('channelUrlBox').value = filtered[0].url;
+    } else {
+      document.getElementById('video').src = '';
+      document.getElementById('channelUrlBox').value = '';
+    }
 });
 
+// REGION CHANGE
+document.getElementById('regionSelect').addEventListener('change', function() {
+    let region = this.value;
+    let url = regionM3uUrls[region] || regionM3uUrls.id;
+    document.getElementById('searchBox').value = '';
+    document.getElementById('channelCards').innerHTML = '<div style="color:#e50914;font-size:1.2em;">Loading channels...</div>';
+    fetchAndParseM3U(url).then(channels => {
+        allChannels = channels;
+        renderChannelCards(allChannels);
+        loadChannelsDropdown(allChannels);
+        highlightFirstChannel();
+    });
+});
+
+// On load: ID region
+window.addEventListener('DOMContentLoaded', function(){
+    document.getElementById('regionSelect').value='id';
+    let url = regionM3uUrls.id;
+    document.getElementById('channelCards').innerHTML = '<div style="color:#e50914;font-size:1.2em;">Loading channels...</div>';
+    fetchAndParseM3U(url).then(channels => {
+        allChannels = channels;
+        renderChannelCards(allChannels);
+        loadChannelsDropdown(allChannels);
+        highlightFirstChannel();
+    });
+});
+
+// COPY URL
 function copyUrl() {
     const urlBox = document.getElementById('channelUrlBox');
     urlBox.select();
     urlBox.setSelectionRange(0, 99999);
     document.execCommand('copy');
 }
-
-// When region changes, fetch and update channel list
-document.getElementById('regionSelect').addEventListener('change', function() {
-    const region = this.value;
-    const url = regionM3uUrls[region] || regionM3uUrls['id'];
-    document.getElementById('searchBox').value = '';
-    fetchAndParseM3U(url).then(channels => {
-        allChannels = channels;
-        loadChannels(allChannels);
-    });
-});
-
-// Initial load: Indonesia by default
-window.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('regionSelect').value = 'id';
-    const url = regionM3uUrls['id'];
-    fetchAndParseM3U(url).then(channels => {
-        allChannels = channels;
-        loadChannels(allChannels);
-    });
-});
 </script>
 </body>
 </html>
-

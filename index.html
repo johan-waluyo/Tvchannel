@@ -2,15 +2,28 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>IPTV Channel Player with Search and Copy URL</title>
+<title>IPTV Channel Player with Region Selector</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 <h2>IPTV Channel Player</h2>
+
+<label for="regionSelect"><b>Region:</b></label>
+<select id="regionSelect">
+  <option value="all">ALL</option>
+  <option value="sg">Singapore</option>
+  <option value="my">Malaysia</option>
+  <option value="id" selected>Indonesia</option>
+  <option value="tw">Taiwan</option>
+  <option value="cn">China</option>
+</select>
+<br><br>
+
 <input type="text" id="searchBox" placeholder="Search channel name...">
 <br><br>
 <select id="channelSelect"></select>
 <br><br>
+
 <video id="video" controls width="640" height="360"></video>
 <br>
 Channel Stream URL:
@@ -18,10 +31,18 @@ Channel Stream URL:
 <button onclick="copyUrl()">Copy</button>
 
 <script>
-const m3uUrl = 'https://iptv-org.github.io/iptv/index.m3u';
+const regionM3uUrls = {
+  all: 'https://iptv-org.github.io/iptv/index.m3u',
+  sg:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/sg.m3u',
+  my:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/my.m3u',
+  id:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/id.m3u',
+  tw:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u',
+  cn:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u'
+};
 
-let allChannels = []; // Store all channels here
+let allChannels = []; // master channel list
 
+// Fetch/parse .m3u file
 async function fetchAndParseM3U(url) {
     const response = await fetch(url);
     const text = await response.text();
@@ -58,18 +79,20 @@ function loadChannels(channels, autoPlay = true) {
     });
 
     select.onchange = () => playChannel(channels[select.value].url);
-    // Auto-play the first result only if desired and at least one match
     if (channels.length > 0 && autoPlay) {
         select.selectedIndex = 0;
         playChannel(channels[0].url);
     } else {
         document.getElementById('channelUrlBox').value = '';
+        const video = document.getElementById('video');
+        if (window.hls) window.hls.destroy();
+        video.src = '';
     }
 }
 
 function playChannel(streamUrl) {
     const video = document.getElementById('video');
-    document.getElementById('channelUrlBox').value = streamUrl; // Show URL for copying
+    document.getElementById('channelUrlBox').value = streamUrl;
     if (Hls.isSupported()) {
         if (window.hls) window.hls.destroy();
         window.hls = new Hls();
@@ -80,26 +103,40 @@ function playChannel(streamUrl) {
     }
 }
 
-// Wild search/filter function for the channel list
+// Search/filter for current channel list
 document.getElementById('searchBox').addEventListener('input', function () {
     const keyword = this.value.toLowerCase();
     const filtered = allChannels.filter(ch => ch.name.toLowerCase().includes(keyword));
-    loadChannels(filtered, false); // Don't auto-play on search
+    loadChannels(filtered, false);
 });
 
 function copyUrl() {
     const urlBox = document.getElementById('channelUrlBox');
     urlBox.select();
-    urlBox.setSelectionRange(0, 99999); // For mobile
+    urlBox.setSelectionRange(0, 99999);
     document.execCommand('copy');
 }
 
-// Initial fetch and display
-fetchAndParseM3U(m3uUrl).then(channels => {
-    allChannels = channels;
-    loadChannels(allChannels);
+// When region changes, fetch and update channel list
+document.getElementById('regionSelect').addEventListener('change', function() {
+    const region = this.value;
+    const url = regionM3uUrls[region] || regionM3uUrls['id'];
+    document.getElementById('searchBox').value = '';
+    fetchAndParseM3U(url).then(channels => {
+        allChannels = channels;
+        loadChannels(allChannels);
+    });
+});
+
+// Initial load: Indonesia by default
+window.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('regionSelect').value = 'id';
+    const url = regionM3uUrls['id'];
+    fetchAndParseM3U(url).then(channels => {
+        allChannels = channels;
+        loadChannels(allChannels);
+    });
 });
 </script>
 </body>
-
 </html>

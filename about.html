@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Asia TV</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    :root {
+      --netflix-bg: #141414;
+      --netflix-card: #222;
+      --netflix-highlight: #e50914;
+      --netflix-text: #fff;
+      --netflix-muted: #aaa;
+      --netflix-border: #313131;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      background: var(--netflix-bg);
+      color: var(--netflix-text);
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(to right, #111 80%, transparent);
+      height: 70px;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      color: var(--netflix-text);
+      font-size: 1.3em;
+      letter-spacing: 1.5px;
+      font-weight: bold;
+      border-bottom: 1px solid #222;
+    }
+    .netflix-logo {
+      font-size: 1.8em;
+      color: var(--netflix-highlight);
+      font-family: 'Arial Black', Arial, sans-serif;
+      letter-spacing: -2px;
+      margin-right: 24px;
+      text-shadow: 0 0 18px #e50914aa;
+    }
+    nav {
+      margin-left: 30px;
+    }
+    nav a {
+      color: var(--netflix-text);
+      text-decoration: none;
+      margin-right: 20px;
+      font-weight: bold;
+      font-size: 1.03em;
+    }
+    nav a:hover {
+      color: var(--netflix-highlight);
+    }
+    .featured {
+      width: 100%;
+      max-width: 1280px;
+      margin: 30px auto 0 auto;
+      border-radius: 18px;
+      background: linear-gradient(140deg, #222 80%, #111 100%);
+      padding: 32px 36px 42px 36px;
+      box-shadow: 0 3px 32px #0007;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      position: relative;
+    }
+    @media(max-width:900px) {
+      .featured { padding: 10px 7px 22px 7px;}
+      .featured-title { font-size: 1.2em;}
+    }
+    .featured-title {
+      font-size: 2.2em;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: var(--netflix-text);
+      text-shadow: 0 2px 25px #0009;
+      margin-bottom: 8px;
+      margin-top: 2px;
+    }
+    .featured-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+    .featured-controls select,
+    .featured-controls input[type="text"] {
+      background: #222;
+      color: var(--netflix-text);
+      border: 1px solid var(--netflix-border);
+      border-radius: 4px;
+      padding: 7px 11px;
+      font-size: 1.06em;
+      margin-right: 5px;
+    }
+    .featured-controls input[type="text"] {
+      width: 220px;
+    }
+    .featured-controls select:focus,
+    .featured-controls input[type="text"]:focus {
+      border-color: var(--netflix-highlight);
+      outline: none;
+    }
+    .channelUrlBoxWrapper {
+      margin-top: 8px;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #channelUrlBox {
+      background: #181818;
+      color: var(--netflix-text);
+      border: 1px solid var(--netflix-border);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 0.98em;
+      width: 230px;
+    }
+    button {
+      background: var(--netflix-highlight);
+      color: #fff;
+      padding: 7px 18px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 500;
+      transition: background .2s;
+    }
+    button:hover { background: #b00610;}
+    #video {
+      width: 100%;
+      max-width: 780px;
+      height: 430px;
+      background: #000;
+      border-radius: 11px;
+      display: block;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 18px #0008;
+    }
+    .channel-section {
+      width: 100%;
+      max-width: 1280px;
+      margin: 30px auto 0 auto;
+      padding: 4px 24px 20px 24px;
+    }
+    .channel-row-title {
+      font-size: 1.45em;
+      margin: 24px 0 6px 5px;
+      font-weight: bold;
+      color: var(--netflix-text);
+      letter-spacing: .5px;
+    }
+    .channel-list {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .channel-card {
+      background: var(--netflix-card);
+      border-radius: 8px;
+      box-shadow: 0 0.5px 6px #0005;
+      padding: 12px 11px 13px 11px;
+      min-width: 180px;
+      max-width: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      position: relative;
+      transition: transform 0.18s;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .channel-card:hover {
+      border-color: var(--netflix-highlight);
+      transform: scale(1.03);
+      z-index: 2;
+      box-shadow: 0 2px 16px #e5091422;
+    }
+    .channel-card .channel-name {
+      font-size: 1.15em;
+      font-weight: bold;
+      color: var(--netflix-text);
+      margin-bottom: 7px;
+      margin-top: 3px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 95%;
+    }
+    .channel-card .play-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--netflix-highlight);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 12px 4px 12px;
+      font-size: 1em;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 4px;
+      box-shadow: 0 1px 8px #b0061077;
+      transition: background .2s;
+    }
+    .channel-card .play-btn:hover { background: #b00610;}
+    .channel-card .channel-url {
+      font-size: 0.89em;
+      color: var(--netflix-muted);
+      margin-top: 9px;
+      max-width: 95%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* --- Footer/donate --- */
+    footer {
+      background: #111;
+      color: var(--netflix-text);
+      padding: 23px 12px 9px 12px;
+      text-align: center;
+      font-size: 1.05em;
+      margin-top: 24px;
+    }
+    .donate-footer {
+      background: #181818;
+      border-radius: 8px;
+      color: var(--netflix-text);
+      padding: 18px 14px 4px 14px;
+      margin: 0 auto 18px auto;
+      max-width: 500px;
+      box-shadow: 0 2px 16px #0007;
+    }
+    .donate-footer h3 {
+      color: var(--netflix-highlight);
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    .donate-footer a {
+      background: orange;
+      color: white;
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 1.08em;
+      font-weight: 500;
+      margin-top: 6px;
+      margin-bottom: 7px;
+    }
+    .donate-footer a:hover {
+      background: #f39c12;
+    }
+    .qr-wrapper {
+      background: #fff;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px 12px;
+      margin-bottom: 7px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .qr-wrapper img {
+      width: 200px;
+      max-width: 85vw;
+      display: block;
+      border-radius: 6px;
+    }
+    .donate-footer hr {
+      border: none;
+      border-top: 1px solid #444;
+      margin: 16px 0 8px;
+    }
+    @media (max-width: 700px) {
+      .qr-wrapper img { width: 120px; }
+      .qr-wrapper { padding: 8px 4px; }
+      .featured {padding: 8px 2vw;}
+      #video {height:140px;}
+      .channel-section {padding:5px 2vw;}
+      .channel-list {gap:10px;}
+      .channel-card{min-width:130px;}
+    }
+    ::-webkit-scrollbar { height: 7px; background: #191919;}
+    ::-webkit-scrollbar-thumb { background: #2b2b2b;}
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="netflix-logo">TV</span>
+  Asia TV
+  <nav class="main-nav">
+	  <a href="index.html">Home</a>
+	  <a href="about.html">About</a>
+  </nav>
+</header>
+
+<div class="featured">
+  <div class="featured-title">About</div>
+</div>
+<footer>
+  <div class="donate-footer">
+    <h3>Dukung Channel!</h3>
+    <div class="qr-wrapper">
+      <img src="https://raw.githubusercontent.com/johan-waluyo/Tvchannel/main/sawer.png" alt="QR Donasi Saweria" />
+    </div>
+    <p>Scan QR atau klik tombol di bawah ini:</p>
+    <a href="https://saweria.co/johanwaluyo" target="_blank">Donasi ke Saweria</a>
+    <hr>
+    <div style="font-size:0.96em;color:#aaa;">
+      <b>Tips:</b> Jika streaming tidak berjalan, coba pilih channel lain atau region berbeda.<br>
+      <b>Butuh channel favorit?</b> Request via DM IG kami!
+    </div>
+  </div>
+  &copy; 2024 Asia TV &mdash; <a href="https://instagram.com/johanwaluyo" target="_blank" style="color:#e50914;">Instagram</a>
+</footer>
+
+</body>
+</html>
+
+

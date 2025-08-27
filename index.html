@@ -323,6 +323,7 @@
       <option value="cn">China</option>
       <option value="vn">Vietnam</option>
       <option value="kh">Cambodia</option>
+      <option value="fv">Favorite</option>
     </select>
     <input type="text" id="searchBox" placeholder="Search channel name...">
   </div>
@@ -366,7 +367,8 @@ const regionM3uUrls = {
   tw:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/tw.m3u',
   cn:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/cn.m3u',
   vn:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/vn.m3u',
-  kh:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kh.m3u'
+  kh:  'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/kh.m3u',
+  fv:  'https://raw.githubusercontent.com/johan-waluyo/Tvchannel/heads/main/fav.m3u'
 };
 
 let allChannels = []; // current region's channels
@@ -498,6 +500,7 @@ function copyUrl() {
 </script>
 </body>
 </html>
+
 
 
 

@@ -19,8 +19,6 @@ buka **index.html** dalam browser google chrome.
 
 ## 🎉 Thank You!
 
-**Built with ❤️ using Streamlit, yfinance, and Plotly**
-
 **Special thanks to all contributors and supporters!**
 
 [![Support via Saweria](https://img.shields.io/badge/Support%20via-Saweria-orange?style=flat-square&logo=buy-me-a-coffee&logoColor=white)](https://saweria.co/johanwaluyo)
